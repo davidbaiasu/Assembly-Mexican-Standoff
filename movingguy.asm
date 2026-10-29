@@ -11,6 +11,13 @@ clear_screen:
     int 0x10
     ret
 
+hide_cursor:
+    mov ah, 01h
+    mov ch, 20h
+    mov cl, 0
+    int 10h
+    ret
+
 move_cursor:
     ; dh = row dl = column
     mov ah, 02h
@@ -32,11 +39,13 @@ draw_guy:
 
 redraw_guy:
     call clear_screen
+    call hide_cursor
     call draw_guy
     jmp main_loop
 
 start:
     call clear_screen
+    call hide_cursor
     call draw_guy
 
 main_loop:
@@ -74,6 +83,9 @@ right:
     inc byte [guyX]
     jmp redraw_guy
 
+
+%assign CODE_SIZE ($ - $$)
+%warning Code size = CODE_SIZE bytes
 
 times 510-($-$$) db 0
 dw 0xaa55
