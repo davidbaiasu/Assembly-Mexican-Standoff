@@ -57,6 +57,7 @@ frame:
     mov bh, [redY]
     mov dx, 0x4420
     call draw_player
+
     mov bl, 78
     sub bl, [wallK]
     mov bh, [blueY]
@@ -100,17 +101,18 @@ frame:
     cmp al, 's'
     je .move_down
     inc bx
-    cmp al, 'i'
+    cmp al, 'o'
     je .move_up
-    cmp al, 'k'
+    cmp al, 'l'
     je .move_down
     cmp al, 'd'
     je .red_shoot
-    cmp al, 'j'
+    cmp al, 'k'
     je .blue_shoot
     jmp .input
 
 .move_up:
+
     cmp byte [bx], 0
     je .input
     dec byte [bx]
@@ -136,6 +138,7 @@ frame:
     jmp .input
 
 .blue_shoot:
+
     cmp byte [blueBX], 0
     jne .input
     mov al, 77
@@ -147,10 +150,11 @@ frame:
     jmp .input
 
 .update_bullets:
+
     mov al, [redBX]
     test al, al
     jz .red_bullet_done
-    inc al
+    add al, 2
     mov [redBX], al
     mov ah, 78
     sub ah, [wallK]
@@ -164,10 +168,11 @@ frame:
     jmp win_red
 
 .red_bullet_done:
+
     mov al, [blueBX]
     test al, al
     jz .end_blue_bullet
-    dec al
+    sub al, 2
     mov [blueBX], al
     mov ah, [wallK]
     inc ah
@@ -183,7 +188,7 @@ frame:
 .end_blue_bullet:
 
     inc byte [frames]
-    test byte [frames], 63
+    test byte [frames], 31  ; wall moving speed
     jnz .new_frame
     inc byte [wallK]
     cmp byte [wallK], 38
@@ -195,11 +200,18 @@ frame:
 
 ; Game Over Screens
 
-tie:      mov ax, 0x7720
-          jmp over
-win_red:  mov ax, 0x4420
-          jmp over
-win_blue: mov ax, 0x1120
+tie:      
+    mov ax, 0x7720
+    jmp over
+
+win_red:
+
+    mov ax, 0x4420
+    jmp over
+
+win_blue:
+
+    mov ax, 0x1120
 
 over:
 
@@ -250,6 +262,8 @@ draw_player:
     inc bh
     loop .next_cell
     ret
+
+; Print bytes used
 
 %assign CODE_SIZE ($ - $$)
 %warning Code size = CODE_SIZE bytes
